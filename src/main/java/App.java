@@ -2,6 +2,7 @@ import java.util.HashMap;
 import spark.ModelAndView;
 import spark.template.velocity.VelocityTemplateEngine;
 import static spark.Spark.*;
+import java.util.ArrayList;
 
 public class App {
   public static void main(String[] args) {
@@ -10,19 +11,28 @@ public class App {
 
     get("/", (request, response) -> {
       HashMap model = new HashMap();
-      model.put("template", "templates/input.vtl");
+
+      model.put("tasks", request.session().attribute("tasks"));
+      model.put("template", "templates/index.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
 
-    get("/result", (request, response) -> {
-      String textInput = request.queryParams("textInput");
+    post("/tasks", (request, response) -> {
+      HashMap<String, Object> model = new HashMap<String, Object>();
 
-      //call business logic functions here
-      String result = textInput;
+      ArrayList<Task> tasks = request.session().attribute("tasks");
 
-      HashMap model = new HashMap();
-      model.put("template", "templates/output.vtl");
-      model.put("result", String.format(result));
+      if (tasks == null) {
+        tasks = new ArrayList<Task>();
+        request.session().attribute("tasks", tasks);
+      }
+
+      String description = request.queryParams("description");
+      Task newTask = new Task(description);
+
+      tasks.add(newTask);
+
+      model.put("template", "templates/success.vtl");
       return new ModelAndView(model, layout);
     }, new VelocityTemplateEngine());
       //additional pages would go here

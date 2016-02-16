@@ -1,9 +1,12 @@
+import java.util.ArrayList;
+
 import org.fluentlenium.adapter.FluentTest;
 import org.junit.ClassRule;
 import org.junit.Test;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.htmlunit.HtmlUnitDriver;
 
+import static org.fluentlenium.core.filter.FilterConstructor.*;
 import static org.assertj.core.api.Assertions.assertThat;
 
 public class IntegrationTest extends FluentTest {
@@ -18,12 +21,46 @@ public class IntegrationTest extends FluentTest {
 
 
 
-/*
-  @Test
-  public void rootTest() {
-      goTo("http://localhost:4567/");
-      assertThat(pageSource()).contains("Enter change:");
-  }
+
+    @Test
+    public void rootTest() {
+        goTo("http://localhost:4567/");
+        assertThat(pageSource()).contains("Task list:");
+    }
+
+    @Test
+    public void taskIsCreatedTest() {
+      goTo("http://0.0.0.0:4567");
+      fill("#description").with("Mow the lawn");
+      submit(".btn");
+      assertThat(pageSource()).contains("Your task has been saved.");
+    }
+
+    @Test
+    public void taskIsDisplayedTest() {
+      goTo("http://0.0.0.0:4567");
+      fill("#description").with("Mow the lawn");
+      submit(".btn");
+      click("a", withText("Go Back"));
+      assertThat(pageSource()).contains("Mow the lawn");
+      }
+
+    @Test
+    public void multipleTasksAreDisplayedTest() {
+      goTo("http://0.0.0.0:4567");
+      fill("#description").with("Mow the lawn");
+      submit(".btn");
+      click("a", withText("Go Back"));
+      fill("#description").with("Buy groceries");
+      submit(".btn");
+      click("a", withText("Go Back"));
+      assertThat(pageSource()).contains("Mow the lawn");
+      assertThat(pageSource()).contains("Buy groceries");
+    }
+
+  } //end of Fluent
+
+  /*
   @Test
   public void getChange() {
     goTo("http://localhost:4567");
@@ -39,5 +76,3 @@ public class IntegrationTest extends FluentTest {
     assertThat(pageSource()).contains("Please enter a positive value");
   }
 */
-
-}
